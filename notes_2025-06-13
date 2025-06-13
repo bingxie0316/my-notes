@@ -1,0 +1,18 @@
+# PointNet++ 多尺度特征聚合机制研究
+
+## 1. 核心问题
+- 点云非均匀性挑战
+- 局部特征感知的局限性
+
+## 2. MSG 机制详解
+### 2.1 算法流程
+```python
+def MSG_layer(points, radii=[0.1, 0.2, 0.4]):
+    all_feats = []
+    for r in radii:
+        # 球查询分组
+        grouped_points = ball_query(points, r)  
+        # 特征提取（共享权重MLP）
+        feat = MLP(grouped_points)  
+        all_feats.append(feat)
+    return torch.cat(all_feats, dim=-1)  # 多尺度特征拼接
