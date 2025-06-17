@@ -1,0 +1,12 @@
+# 修改PointNet++的sampling_layer.py  
+def density_aware_fps(points, k, density_radius=0.3):  
+    # 计算局部密度 (N点邻域内点数)  
+    knn_dist = knn_distance(points, k=16)  
+    density = 1 / (knn_dist.mean(dim=1) + 1e-6)  
+    
+    # 密度加权距离矩阵  
+    dist_matrix = pairwise_distance(points)  
+    weighted_dist = dist_matrix * density[None, :]  # 高密度区域缩短有效距离  
+    
+    # 执行加权FPS  
+    return weighted_fps(weighted_dist, k)  
